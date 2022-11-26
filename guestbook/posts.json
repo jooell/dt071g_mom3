@@ -1,4 +1,4 @@
-{
-  "joel": "Hej, here is my first post",
-  "stefan":  "another post"
-}
+[
+  {"joel": "Hej, here is my first post" },
+  { "stefan": "another post"}
+]
