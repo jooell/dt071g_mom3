@@ -20,7 +20,6 @@ namespace guestbook
         public PostClass() // Denna funktion körs vid initiering av klassen
         {   
             getPosts();
-            printPosts();
         }
 
         //
@@ -38,12 +37,21 @@ namespace guestbook
 
         // loops through list and prints to console
         public void printPosts()
-        {   // FUNCTION PRINT POSTS TO CONSOLE
+        {
+            Console.Clear();
+            Console.WriteLine("VÄLKOMMEN TILL GÄSTBOKEN - dt071g - Joel Lindh \n\n");
             SinglePost singlePost = new SinglePost();
+            // print and format of stored posts
             int i = 0;
             foreach (object a in listOfPosts)
             {
-                Console.WriteLine(i.ToString() + a);
+                
+                string formatedMessage = Convert.ToString(a);
+                formatedMessage = formatedMessage.Remove(0, 10);
+                int index = formatedMessage.IndexOf(",");
+                formatedMessage = formatedMessage.Remove(index, 12);
+                formatedMessage = formatedMessage.Replace("\"}", string.Empty).Replace("\"", " - ");
+                Console.WriteLine("[" + i.ToString() + "] " + formatedMessage);
                 i++;
             }
         }
@@ -55,6 +63,7 @@ namespace guestbook
             writeToFile();
         }
 
+        // remove post
         public void removePost(int listIndex)
         {
             listOfPosts.RemoveAt(listIndex);
@@ -70,11 +79,6 @@ namespace guestbook
             string jsonString = JsonSerializer.Serialize(listOfPosts);
             File.WriteAllText(fileLocation, jsonString);
         }
-
-
-
-        // Nu funkar det. Värdena för guest och message sparas tillsammans. Lägg in indexering ??
-
     }
     
     public class SinglePost
@@ -99,40 +103,60 @@ namespace guestbook
     {
         static void Main(string[] args)
         {   
+            
             // new instance of PostClass
             PostClass postClass = new PostClass();
 
-            // PRESENTATION 
-            Console.WriteLine("Välkommen till gästboken \nGör ett val nedan \n\n");
-            Console.WriteLine("'1' för att lägga till en ny post \n'2' för att testa \n'X' för att avsluta\n");
+            while(true) { 
 
-            // new instance of class
-            SinglePost obj = new SinglePost();
+                // TRUE FUCKAR UPP FUNKTIONEN
+
+                //Console.Clear(); 
+                Console.CursorVisible = false;
 
 
-            // SWITCH BY INPUT CHOISE
-            int input = (int)Console.ReadKey(true).Key;
-            switch (input) {
-                case '1':
-     
-                    Console.WriteLine("skriv in username");
-                    string userinput = Console.ReadLine();
-                    obj.Guest = userinput;
 
-                    Console.WriteLine("skriv in message");
-                    string hej = Console.ReadLine();
-                    obj.Message = hej;
-                    postClass.addPost(obj);
-                    break;
-                case '2':
-                    Console.WriteLine("Vilken post vill du ta bort?");
-                    int listIndex = Convert.ToInt32(Console.ReadLine());
-                    postClass.removePost(listIndex);
+                // PRESENTATION 
+                postClass.printPosts();
 
-                    break;
-                case 88:
-                    Environment.Exit(0);
-                    break;
+
+                Console.WriteLine("\nGör ett val nedan:\n");
+                Console.WriteLine("'1' för att lägga till en ny post \n'2' för att testa \n'X' för att avsluta\n");
+
+                // new instance of class
+                SinglePost obj = new SinglePost();
+
+
+                // SWITCH BY INPUT CHOISE
+                int input = (int)Console.ReadKey(true).Key;
+                switch (input) {
+                    case '1':
+                        Console.CursorVisible = true;
+
+                        Console.WriteLine("skriv in username");
+                        string userinput = Console.ReadLine();
+                        obj.Guest = userinput;
+
+                        Console.WriteLine("skriv in message");
+                        string hej = Console.ReadLine();
+                        obj.Message = hej;
+                        postClass.addPost(obj);
+                        postClass.getPosts();
+                        postClass.printPosts();
+                        break;
+                    case '2':
+                        Console.CursorVisible = true;
+
+                        Console.WriteLine("Vilken post vill du ta bort?");
+                        int listIndex = Convert.ToInt32(Console.ReadLine());
+                        //int listIndex = Convert.ToInt32((int)Console.ReadKey(true).Key);
+                        postClass.removePost(listIndex);
+
+                        break;
+                    case 88:
+                        Environment.Exit(0);
+                        break;
+                }
             }
         }
     }
