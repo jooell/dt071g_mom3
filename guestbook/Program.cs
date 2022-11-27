@@ -1,13 +1,11 @@
-﻿
+﻿/*
+ *      JOLI 2114 för moment 3 i kursen dt071g - mittuniversitetet
+ */
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Runtime.ConstrainedExecution;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
-
 
 namespace guestbook
 {
@@ -22,17 +20,17 @@ namespace guestbook
             getPosts();
         }
 
-        //
+        // get posts from file
         public void getPosts()
         {   
-            if (File.Exists(@"C:\Users\46703\source\repos\guestbook\guestbook/posts.json") == true)
+            if (File.Exists(fileLocation) == true)
             {   // save conntents of file to variable
                 string jsonString = File.ReadAllText(@"C:\Users\46703\source\repos\guestbook\guestbook/posts.json");
-                // deserialisera som objekt
+                // deserialize and save as objecgs to list
                 listOfPosts = JsonSerializer.Deserialize<List<object>>(jsonString);
             }
-            // om inte hittat fil, printa felmeddelande
-            else { Console.WriteLine("\nhittade inte filen"); }
+            // if file not found, print error and exit
+            else { Console.WriteLine("\nFilen kunde inte hittas. Avslutar..."); Environment.Exit(0); }
         }
 
         // loops through list and prints to console
@@ -40,13 +38,13 @@ namespace guestbook
         {
             Console.Clear();
             Console.WriteLine("VÄLKOMMEN TILL GÄSTBOKEN - dt071g - Joel Lindh \n\n");
-            SinglePost singlePost = new SinglePost();
-            // print and format of stored posts
-            int i = 0;
-            foreach (object a in listOfPosts)
+            SinglePost singlePost = new SinglePost();           // new instance of class
+            
+            int i = 0;                                          // int for printing index
+            foreach (object post in listOfPosts)
             {
-                
-                string formatedMessage = Convert.ToString(a);
+                // format output and print with index
+                string formatedMessage = Convert.ToString(post);
                 formatedMessage = formatedMessage.Remove(0, 10);
                 int index = formatedMessage.IndexOf(",");
                 formatedMessage = formatedMessage.Remove(index, 12);
@@ -63,17 +61,16 @@ namespace guestbook
             writeToFile();
         }
 
-        // remove post
+        // removes post based on index
         public void removePost(int listIndex)
         {
             listOfPosts.RemoveAt(listIndex);
             writeToFile();
             getPosts();
             printPosts();
-
         }
 
-        //  serializes list to json and overwrites file
+        // serializes list to json and writes to file
         private void writeToFile()
         {
             string jsonString = JsonSerializer.Serialize(listOfPosts);
@@ -81,79 +78,65 @@ namespace guestbook
         }
     }
     
+    // class single post to handle username and post
     public class SinglePost
     {
         private string guest;
         public string Guest
-        {
-            set { this.guest = value; }
-            get { return this.guest; }
-        }
+        { set { this.guest = value; } get { return this.guest; } }
 
         private string message;
         public string Message
-        {
-            set { this.message = value; }
-            get { return this.message; }
-        }
+        { set { this.message = value; } get { return this.message; } }
     }
-    
  
-    class Program //********* MAIN PROGRAM EXECUTION ***********
+    class Program //********* MAIN PROGRAM EXECUTION ***********//
     {
         static void Main(string[] args)
-        {   
-            
+        {
             // new instance of PostClass
             PostClass postClass = new PostClass();
 
-            while(true) { 
+            while(true) {   // while true keeps function alive until exit
 
-                // TRUE FUCKAR UPP FUNKTIONEN
-
-                //Console.Clear(); 
-                Console.CursorVisible = false;
-
-
-
-                // PRESENTATION 
-                postClass.printPosts();
-
-
+                Console.CursorVisible = false;  // removes cursor
+                
+                postClass.printPosts();         // prints posts and welcome messages
                 Console.WriteLine("\nGör ett val nedan:\n");
                 Console.WriteLine("'1' för att lägga till en ny post \n'2' för att testa \n'X' för att avsluta\n");
 
-                // new instance of class
+                // new instance of SinglePost
                 SinglePost obj = new SinglePost();
 
-
-                // SWITCH BY INPUT CHOISE
+                // swtich cases based on user key input
                 int input = (int)Console.ReadKey(true).Key;
                 switch (input) {
                     case '1':
-                        Console.CursorVisible = true;
 
-                        Console.WriteLine("skriv in username");
+                        Console.CursorVisible = true;
+                        Console.WriteLine("Lägg till i gästboken!");
+                        Console.WriteLine("Skriv in ditt användarnamn");
                         string userinput = Console.ReadLine();
                         obj.Guest = userinput;
 
-                        Console.WriteLine("skriv in message");
+                        Console.WriteLine("Skriv in ditt meddelande");
                         string hej = Console.ReadLine();
                         obj.Message = hej;
-                        postClass.addPost(obj);
-                        postClass.getPosts();
-                        postClass.printPosts();
+
+                        // calls on postClass functions to process input
+                        postClass.addPost(obj); postClass.getPosts(); postClass.printPosts();
                         break;
                     case '2':
-                        Console.CursorVisible = true;
 
-                        Console.WriteLine("Vilken post vill du ta bort?");
+                        Console.CursorVisible = true;
+                        Console.WriteLine("Ta bort post från gästboken!");
+                        Console.WriteLine("Vilken post vill du ta bort? Välj baserat på index.");
+
                         int listIndex = Convert.ToInt32(Console.ReadLine());
-                        //int listIndex = Convert.ToInt32((int)Console.ReadKey(true).Key);
                         postClass.removePost(listIndex);
 
                         break;
-                    case 88:
+                    case 88:    // if user input = "X", exit program
                         Environment.Exit(0);
                         break;
                 }
