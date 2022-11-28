@@ -138,9 +138,9 @@ namespace guestbook
                         if (userinput == "" || usermessage == "")
                         {
                             {
-                                Console.WriteLine("\nFel inmatning. (inget namn/meddelande angett) Applikationen stängs....");
+                                Console.WriteLine("\nFel inmatning. (inget namn/meddelande angett) Applikationen återstartas om 3 sekunder.");
                                 System.Threading.Thread.Sleep(3000);
-                                return;
+                                break;
                             }
                         } else
                         {
@@ -148,7 +148,6 @@ namespace guestbook
                             postClass.addPost(obj); postClass.getPosts(); postClass.printPosts();
                             break;
                         }
-                        return;
                     case '2':
 
                         Console.CursorVisible = true;
