@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
+// sleep functionality to delay
+using System.Threading;
+
 namespace guestbook
 {
     public class PostClass
@@ -64,10 +67,19 @@ namespace guestbook
         // removes post based on index
         public void removePost(int listIndex)
         {
-            listOfPosts.RemoveAt(listIndex);
-            writeToFile();
-            getPosts();
-            printPosts();
+            // check validity of input
+            if (listIndex > listOfPosts.Count)
+            {
+                Console.WriteLine("\nFel inmatning. (index stämmer inte) Applikationen återstartas om 3 sekunder.");
+                System.Threading.Thread.Sleep(3000);
+                return;
+            } else
+            {
+                listOfPosts.RemoveAt(listIndex);
+                writeToFile();
+                getPosts();
+                printPosts();
+            }
         }
 
         // serializes list to json and writes to file
@@ -120,12 +132,23 @@ namespace guestbook
                         obj.Guest = userinput;
 
                         Console.WriteLine("Skriv in ditt meddelande");
-                        string hej = Console.ReadLine();
-                        obj.Message = hej;
+                        string usermessage = Console.ReadLine();
+                        obj.Message = usermessage;
 
-                        // calls on postClass functions to process input
-                        postClass.addPost(obj); postClass.getPosts(); postClass.printPosts();
-                        break;
+                        if (userinput == "" || usermessage == "")
+                        {
+                            {
+                                Console.WriteLine("\nFel inmatning. (inget namn/meddelande angett) Applikationen stängs....");
+                                System.Threading.Thread.Sleep(3000);
+                                return;
+                            }
+                        } else
+                        {
+                            // calls on postClass functions to process input
+                            postClass.addPost(obj); postClass.getPosts(); postClass.printPosts();
+                            break;
+                        }
+                        return;
                     case '2':
 
                         Console.CursorVisible = true;
